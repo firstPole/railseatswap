@@ -24,7 +24,7 @@ export const helmetMiddleware = helmet({
 });
 
 // ── CORS: only allow our known frontend origin ─────────────────────────────────
-const allowedOrigins = [env.FRONTEND_URL];
+const allowedOrigins = [env.FRONTEND_URL,'http://localhost:5173'];
 
 export const corsMiddleware = cors({
   origin: (origin, callback) => {
