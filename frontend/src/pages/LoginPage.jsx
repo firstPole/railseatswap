@@ -44,9 +44,9 @@ export default function LoginPage() {
         setStep('otp');
         return;
       }
-
+const testEmail = 'vimalmcafifty@gmail.com';
       const { error: err } = await supabase.auth.signInWithOtp({
-  email: `${phone}@seatswap.in`,
+  email: testEmail,
   options: { shouldCreateUser: true },
 });
 
