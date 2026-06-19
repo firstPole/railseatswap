@@ -95,7 +95,7 @@ const testEmail = 'worksource.me@gmail.com';
       const { data, error: err } = await supabase.auth.verifyOtp({
   email: `${phone}@seatswap.in`,
   token: otp,
-  type: 'email',
+  type: 'magiclink',
 });
 
       if (err) throw err;
