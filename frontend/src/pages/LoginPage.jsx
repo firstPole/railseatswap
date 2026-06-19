@@ -46,9 +46,9 @@ export default function LoginPage() {
       }
 
       const { error: err } = await supabase.auth.signInWithOtp({
-        phone: `+91${phone}`,
-        options: { channel: 'sms' },
-      });
+  email: `${phone}@seatswap.in`,
+  options: { shouldCreateUser: true },
+});
 
       if (err) throw err;
       await track('auth.otp_sent');
@@ -93,10 +93,10 @@ export default function LoginPage() {
       }
 
       const { data, error: err } = await supabase.auth.verifyOtp({
-        phone: `+91${phone}`,
-        token: otp,
-        type: 'sms',
-      });
+  email: `${phone}@seatswap.in`,
+  token: otp,
+  type: 'email',
+});
 
       if (err) throw err;
 
@@ -189,8 +189,7 @@ export default function LoginPage() {
           </form>
         ) : (
           <form onSubmit={verifyOtp}>
-            <p style={styles.otpHint}>
-              OTP sent to +91 {phone} ·{' '}
+            <p style={styles.otpHint}>OTP sent to your registered email
               <button type="button" className="login-textbtn" style={styles.textBtn} onClick={() => setStep('phone')}>
                 Change
               </button>
