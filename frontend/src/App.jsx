@@ -51,8 +51,12 @@ function AuthProvider({ children }) {
   const loading = useAuthStore(s => s.loading);
 
   useEffect(() => {
+    console.log('[AuthProvider] URL:', window.location.href);
+  console.log('[AuthProvider] party param:', new URLSearchParams(window.location.search).get('party'));
+  
   // 1. Handle Party B URL param (works in any environment now)
   const isPartyB = new URLSearchParams(window.location.search).get('party') === 'B';
+  console.log('[AuthProvider] isPartyB:', isPartyB);
 
   if (isPartyB) {
     sessionStorage.setItem('mock_token', 'mock-development-token-2');
