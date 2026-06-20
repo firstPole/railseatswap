@@ -88,7 +88,7 @@ export const lookupPnr = async (pnr) => {
   logger.debug('PNR lookup', { pnr: `XXXXXX${pnr.slice(-4)}` });
 
   // Dev mock — controlled by env, not hardcoded PNR list in production
-  if (env.NODE_ENV === 'development' && env.MOCK_PNR === 'true') {
+  if (env.MOCK_PNR === 'true') {
     const mockRaw = MOCK_PNRS[pnr];
     if (!mockRaw) throw new AppError('No mock data for this PNR. Try 9876543210 or 1234567890.', 404, 'PNR_NOT_FOUND');
     logger.info('[Mock] Returning mock PNR data', { pnr });
