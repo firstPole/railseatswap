@@ -29,19 +29,21 @@ const VERCEL_PREVIEW_REGEX = /^https:\/\/.*\.vercel\.app$/;
 
 export const corsMiddleware = cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (server-to-server, curl, Render health checks)
     if (!origin) return callback(null, true);
-
     const isAllowed =
       allowedOrigins.includes(origin) || VERCEL_PREVIEW_REGEX.test(origin);
-
-    if (!isAllowed) {
-      return callback(new AppError('Not allowed by CORS', 403));
-    }
+    if (!isAllowed) return callback(new AppError('Not allowed by CORS', 403));
     return callback(null, true);
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization',
+    'X-Device-Type',
+    'X-App-Version',
+    'X-Session-ID',
+    'X-Source',
+  ],
   credentials: true,
   maxAge: 86400,
 });
