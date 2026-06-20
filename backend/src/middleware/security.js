@@ -24,13 +24,18 @@ export const helmetMiddleware = helmet({
 });
 
 // ── CORS: only allow our known frontend origin ─────────────────────────────────
-const allowedOrigins = [env.FRONTEND_URL,'http://localhost:5173'];
+const allowedOrigins = [env.FRONTEND_URL, 'http://localhost:5173'];
+const VERCEL_PREVIEW_REGEX = /^https:\/\/.*\.vercel\.app$/;
 
 export const corsMiddleware = cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g. server-to-server, curl in dev)
-    if (!origin && env.NODE_ENV === 'development') return callback(null, true);
-    if (!origin || !allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (server-to-server, curl, Render health checks)
+    if (!origin) return callback(null, true);
+
+    const isAllowed =
+      allowedOrigins.includes(origin) || VERCEL_PREVIEW_REGEX.test(origin);
+
+    if (!isAllowed) {
       return callback(new AppError('Not allowed by CORS', 403));
     }
     return callback(null, true);
@@ -38,8 +43,9 @@ export const corsMiddleware = cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  maxAge: 86400, // pre-flight cache 24h
+  maxAge: 86400,
 });
+
 
 // ── Rate limiting: global default ─────────────────────────────────────────────
 export const globalRateLimiter = rateLimit({
