@@ -51,46 +51,44 @@ function AuthProvider({ children }) {
   const loading = useAuthStore(s => s.loading);
 
   useEffect(() => {
-    // 1. Handle development mode routing variants cleanly
-    const isPartyB = import.meta.env.DEV &&
-      new URLSearchParams(window.location.search).get('party') === 'B';
+  // 1. Handle Party B URL param (works in any environment now)
+  const isPartyB = new URLSearchParams(window.location.search).get('party') === 'B';
 
-    if (isPartyB) {
-      sessionStorage.setItem('mock_token', 'mock-development-token-2');
-      const mockSession = {
-        access_token: 'mock-development-token-2',
-        user: { id: '00000000-0000-0000-0000-000000000002', phone: '+919898989899' }
-      };
-      setSession(mockSession);
-      requestPushPermission();
-      return;
-    }
+  if (isPartyB) {
+    sessionStorage.setItem('mock_token', 'mock-development-token-2');
+    const mockSession = {
+      access_token: 'mock-development-token-2',
+      user: { id: '00000000-0000-0000-0000-000000000002', phone: '+919898989899' }
+    };
+    setSession(mockSession);
+    requestPushPermission();
+    return;
+  }
 
-    // 2. Align Zustand state with tab-isolated storage tokens on hard reload
-    const tabToken = sessionStorage.getItem('mock_token');
-    if (tabToken && !useAuthStore.getState().session) {
-      console.log('[AUTH] Syncing tab-isolated storage token to Zustand state tree');
-      const standardDevSession = {
-        access_token: tabToken,
-        user: { id: '00000000-0000-0000-0000-000000000002', phone: '+919898989899' }
-      };
-      setSession(standardDevSession);
-      requestPushPermission();
-    }
+  // 2. Align Zustand state with tab-isolated storage tokens on hard reload
+  const tabToken = sessionStorage.getItem('mock_token');
+  if (tabToken && !useAuthStore.getState().session) {
+    const standardDevSession = {
+      access_token: tabToken,
+      user: { id: '00000000-0000-0000-0000-000000000002', phone: '+919898989899' }
+    };
+    setSession(standardDevSession);
+    requestPushPermission();
+  }
 
-    // 3. Fallback to production Supabase session checks
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) requestPushPermission();
-    });
+  // 3. Fallback to production Supabase session checks
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setSession(session);
+    if (session) requestPushPermission();
+  });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) requestPushPermission();
-    });
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    setSession(session);
+    if (session) requestPushPermission();
+  });
 
-    return () => subscription.unsubscribe();
-  }, []);
+  return () => subscription.unsubscribe();
+}, []);
 
   if (loading) return <div style={{ textAlign: 'center', padding: '3rem' }}>Loading…</div>;
   return children;
