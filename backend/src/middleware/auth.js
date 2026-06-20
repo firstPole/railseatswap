@@ -16,28 +16,17 @@ export const authenticate = async (req, _res, next) => {
 
     const token = authHeader.slice(7);
 
-    // ── Dev mock bypass ──────────────────────────────────────────────────────
-    if (process.env.NODE_ENV === 'development' && token === 'mock-development-token') {
+    // ── Mock bypass (testing only — works in any env for now) ────────────────
+    if (token === 'mock-development-token') {
       req.user = { id: '00000000-0000-0000-0000-000000000001', phone: '+919898989898' };
       return next();
     }
 
-    if (process.env.NODE_ENV === 'development' && token === 'mock-development-token-2') {
-  req.user = { id: '00000000-0000-0000-0000-000000000002', phone: '+919898989899' };
-  return next();
-}
-
-const storeSession = useAuthStore.getState().session;
-// Check if we're simulating party B
-const isPartyB = new URLSearchParams(window.location.search).get('party') === 'B';
-const mockToken = isPartyB ? 'mock-development-token-2' : 'mock-development-token';
-
-if (storeSession?.access_token) {
-  config.headers.Authorization = `Bearer ${storeSession.access_token}`;
-} else {
-  config.headers.Authorization = `Bearer ${mockToken}`;
-}
-    // ────────────────────────────────────────────────────────────────────────
+    if (token === 'mock-development-token-2') {
+      req.user = { id: '00000000-0000-0000-0000-000000000002', phone: '+919898989899' };
+      return next();
+    }
+    // ──────────────────────────────────────────────────────────────────────
 
     const { data, error } = await supabaseAdmin.auth.getUser(token);
     if (error || !data.user) {
