@@ -8,7 +8,7 @@ import DiscoverPage from './pages/DiscoverPage.jsx';
 import TermsPage from './pages/TermsPage.jsx';
 import PrivacyPage from './pages/PrivacyPage.jsx';
 import { apiClient } from './lib/apiClient.js';
-const { user } = useAuthStore();
+
 
 const requestPushPermission = async () => {
    console.log('[Push] requestPushPermission called');
